@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Flight Booking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="bg-texture"></div>
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+
+  <nav>
+    <div class="logo">
+      <i class="ti ti-plane-tilt"></i> Luxe
+    </div>
+  </nav>
+
+  <header>
+    <div class="hero-content">
+      <h1>The Art of <br><span>Travel.</span></h1>
+      <p>Curated flights for the discerning traveler. Experience seamless booking with uncompromised elegance.</p>
+    </div>
+  </header>
+
+  <section class="search-wrapper">
+
+    <div class="search-box">
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Departure</label>
+          <input type="text" class="input-field" id="src" value="Delhi (DEL)" placeholder="City or Airport">
+        </div>
+
+        <div class="swap-wrapper">
+          <button class="btn-swap" onclick="swapCities()"><i class="ti ti-arrows-right-left"></i></button>
+        </div>
+
+        <div class="input-group">
+          <label>Arrival</label>
+          <input type="text" class="input-field" id="dst" value="Paris (CDG)" placeholder="City or Airport">
+        </div>
+
+        <div class="input-group">
+          <label>Date</label>
+          <input type="date" class="input-field" id="depDate">
+        </div>
+
+        <div class="input-group">
+          <label>Class</label>
+          <select class="input-field" id="cabinClass">
+            <option>First Class</option>
+            <option>Business</option>
+            <option>Premium</option>
+            <option>Economy</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top: 2.5rem; text-align: right;">
+        <button class="btn-search" onclick="searchFlights()">
+          Discover Flights <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content" id="mainContent" style="display: none;">
+    <div class="results-header">
+      <div class="results-meta">
+        <h2 class="playfair" id="resultsTitle">Select your journey</h2>
+        <p id="resultsSubtitle">5 curated options found</p>
+      </div>
+
+      <div class="custom-toggle" id="sortToggle">
+        <div class="toggle-bg" id="toggleBg"></div>
+        <div class="toggle-opt active" onclick="setSort('price', 0)">Cheapest</div>
+        <div class="toggle-opt" onclick="setSort('dur', 1)">Fastest</div>
+      </div>
+    </div>
+
+    <div class="loader-container" id="loadingSpinner">
+      <div class="spinner"></div>
+      <p style="color: var(--accent); letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;">Searching premium routes...</p>
+    </div>
+
+    <div class="flight-list" id="flightList">
+      <!-- Injected via JS -->
+    </div>
+  </main>
+
+  <!-- Payment Section -->
+  <section class="payment-section" id="paymentSection">
+    <h2 class="playfair" style="margin-bottom: 1.5rem; color: var(--navy);">Payment Details</h2>
+    <div class="price-breakdown">
+      <div class="price-row"><span>Base Fare (<span id="payPaxCount">1</span> Pax)</span><span id="payBase">₹0</span></div>
+      <div class="price-row"><span>Taxes & Fees (18%)</span><span id="payTax">₹0</span></div>
+      <div class="price-row total"><span>Total Payable</span><span id="payTotal">₹0</span></div>
+    </div>
+    
+    <div class="payment-methods">
+      <div class="method-btn active" onclick="selectPaymentMethod(this, 'card')">Credit/Debit Card</div>
+      <div class="method-btn" onclick="selectPaymentMethod(this, 'upi')">UPI</div>
+    </div>
+
+    <div id="cardFields" class="payment-grid">
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label>Cardholder Name</label>
+        <input type="text" id="cardName" class="form-input" placeholder="Name on Card">
+      </div>
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label>Card Number</label>
+        <input type="text" id="cardNumber" class="form-input" placeholder="0000 0000 0000 0000" maxlength="19">
+      </div>
+      <div class="form-group">
+        <label>Expiry Date</label>
+        <input type="text" id="cardExp" class="form-input" placeholder="MM/YY" maxlength="5">
+      </div>
+      <div class="form-group">
+        <label>CVV</label>
+        <input type="password" id="cardCvv" class="form-input" placeholder="***" maxlength="3">
+      </div>
+    </div>
+
+    <div id="upiFields" class="form-group" style="display: none;">
+      <label>UPI ID</label>
+      <input type="text" id="upiId" class="form-input" placeholder="username@bank">
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+      <button class="btn-confirm" onclick="processPayment()">Confirm Payment</button>
+      <button class="btn-secondary" onclick="goBackToSearch()">Back to Flights</button>
+    </div>
+  </section>
+
+  <!-- E-Ticket Section -->
+  <section class="ticket-section" id="ticketSection">
+    <div class="ticket-header">
+      <i class="ti ti-check" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+      <h2 class="playfair" style="color: var(--success);">Payment Successful</h2>
+      <p style="color: var(--text-muted);">Your booking is confirmed. Have a safe journey!</p>
+    </div>
+    <div class="ticket-details">
+      <div>
+        <div class="ticket-item"><label>Booking ID</label><p id="ticBookingId">---</p></div>
+        <div class="ticket-item"><label>Passenger Name</label><p id="ticName">---</p></div>
+        <div class="ticket-item"><label>Flight</label><p id="ticFlight">---</p></div>
+        <div class="ticket-item"><label>Status</label><p style="color: var(--success);">Confirmed</p></div>
+      </div>
+      <div>
+        <div class="ticket-item"><label>Payment ID</label><p id="ticPayId">---</p></div>
+        <div class="ticket-item"><label>Amount Paid</label><p id="ticAmount">---</p></div>
+        <div class="ticket-item"><label>Method</label><p id="ticMethod">---</p></div>
+        <div class="ticket-item"><label>Date & Time</label><p id="ticDate">---</p></div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+      <button class="btn-confirm" onclick="window.print()">Print E-Ticket</button>
+      <button class="btn-secondary" onclick="location.reload()">Book Another Flight</button>
+    </div>
+  </section>
+
+  <!-- Premium Modal -->
+  <div class="modal-overlay" id="bookingModal">
+    <div class="modal-content">
+      <button class="btn-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+      <h2 class="modal-title">Passenger Details</h2>
+      <p class="modal-subtitle">Please provide details exactly as they appear on your travel documents.</p>
+
+      <div class="summary-card" id="modalSummary">
+        <!-- Injected -->
+      </div>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="pName" class="form-input" placeholder="First and Last Name">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="pEmail" class="form-input" placeholder="contact@example.com">
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="pPhone" class="form-input" placeholder="+91 9876543210">
+      </div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" id="pAge" class="form-input" placeholder="Yrs">
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select id="pGender" class="form-input" style="background-color: transparent; color: var(--text); border-bottom: 1px solid var(--border);">
+            <option style="color: black" value="M">Male</option>
+            <option style="color: black" value="F">Female</option>
+            <option style="color: black" value="O">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Passengers</label>
+          <input type="number" id="pCount" class="form-input" value="1" min="1" max="9" onchange="updateModalSummary()">
+        </div>
+      </div>
+
+      <button class="btn-confirm" onclick="proceedToPayment()">Proceed to Payment</button>
+    </div>
+  </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
